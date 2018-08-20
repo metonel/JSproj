@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mouse Shadow</title>
+</head>
+<body>
+
+  <div class="hero">
+    <h1 contenteditable>BLAH BLAH BLAH!</h1>
+  </div>
+
+  <style>
+  html {
+    color:black;
+    font-family: sans-serif;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  .hero {
+    min-height: 100vh;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    color:black;
+  }
+
+  h1 {
+    text-shadow: 10px 10px 0 rgba(0,0,0,1);
+    font-size: 100px;
+  }
+  </style>
+
+<script>
+  const hero = document.querySelector('.hero');
+  const text = hero.querySelector('h1');
+  const miscare = 200; //cati pixeli sa se miste umbra (adica -50px de l poz initila intr-o parte si +50 px in cealalta)
+
+  function umbra(e) {
+    // const width = hero.offsetWidth;
+    // const height = hero.offsetHeight;
+    // sau se poate cu destructuring of the hero element in es6 asa:
+    const { offsetWidth: width, offsetHeight: height } = hero;
+    let { offsetX: x, offsetY: y } = e;
+
+    //offset-ul se reseteaza cand ajunge intr-un child, cum e h1-le, cu e.target se da elementul care ii triggered
+    //console.log(this, e.target);
+    //in if se verifica daca mouseul e in h1 si se corecteaza offseturilor
+    if(this !== e.target) {
+      x = x + e.target.offsetLeft;
+      y = y + e.target.offsetTop;
+
+    }
+
+    const xMiscare = Math.round((x / width * miscare) - (miscare / 2));
+    const yMiscare = Math.round((y / height * miscare) - (miscare / 2));
+
+    console.log(xMiscare, yMiscare);
+
+    text.style.textShadow = `
+      ${xMiscare}px ${yMiscare}px 0 red,
+      ${xMiscare * -1}px ${yMiscare}px 0 rgba(0, 255, 255, 0.7),
+      ${xMiscare}px ${yMiscare * -1}px 0 rgba(0, 255, 0, 0.7),
+      ${xMiscare * -1}px ${yMiscare * -1}px 0 rgba(0, 0, 255, 0.7)
+      `;
+
+  }
+
+  hero.addEventListener('mousemove', umbra);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>live search 👀</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <form class="search-form">
+    <input type="text" class="search" placeholder="oras sau stat">
+    <ul class="suggestions">
+      <!-- <li>filtru pentru oras</li>
+      <li>sau stat</li> -->
+    </ul>
+  </form>
+<script>
+const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+
+const orase = [];
+
+
+//fetch returneaza o pronise, cu .then ne folosim de ea ca o functie callback
+//fetch(endpoint).then(date => console.log(date));
+//promisiunea returnata nu ii formatata, ii ca un bloc raw de date, promisiunea returnata, are o functie json care si aia tot promisiune returneaza
+//fetch(endpoint).then(date => date.json()).then(datej => console.log(datej));
+fetch(endpoint).then(date => date.json()).then(datej => orase.push(...datej)); //daca nu faceam push cu spread, punea array in array
+
+function gaseste(input, orase) {
+  return orase.filter(loc => {
+    const regex = new RegExp(input, 'gi'); //al doilea parametru is flaguri pt RegExp, g- global, i- insensitive
+    return loc.city.match(regex) || loc.state.match(regex);
+  })
+}
+
+//sa formateze mai frumos populatia oraselor, functie standard din stackoverflow
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function arata() {
+  const matchArray = gaseste(this.value, orase);
+  const html = matchArray.map(loc => {
+    //ca in raspuns, cand arata orasele si statele partea ce am cautat-o sa fie highlight-uita
+    const regex = new RegExp(this.value, 'gi');
+    const oras = loc.city.replace(regex, `<span class="hl">${this.value}</span>`);
+    const stat = loc.state.replace(regex, `<span class="hl">${this.value}</span>`);
+    return `
+      <li>
+        <span class="name">${oras}, ${stat}</span>
+        <span class="population">${numberWithCommas(loc.population)}</span>
+      </li>
+    `;
+  }).join(''); //map returneaza array si cu join facem un string
+  sugestii.innerHTML = html;
+}
+
+const searchInput = document.querySelector('.search'); //selectam elementu din document cu clasa .search
+const sugestii = document.querySelector('.suggestions');
+
+searchInput.addEventListener('keyup', arata);
+
+</script>
+  </body>
+</html>

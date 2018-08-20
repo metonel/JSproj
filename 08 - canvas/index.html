@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+</head>
+<body>
+<canvas id="deseneaza" width="800" height="800"></canvas>
+<script>
+  const canvas = document.querySelector('#deseneaza');
+  const cnt = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  cnt.strokeStyle = '#BADASS';
+  cnt.lineJoin = 'round';
+  cnt.lineCap = 'round';
+  cnt.lineWidth = 20;
+
+  let inDesenare = false;
+  let lastX = 0;
+  let lastY = 0;
+  let hue = 0;
+
+  function deseneaza(e) {
+    if(!inDesenare) return;
+    console.log(e);
+    //http://mothereffinghsl.com
+    cnt.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+    cnt.beginPath();
+    //coordonate inceput
+    cnt.moveTo(lastX, lastY); 
+    //coordonate curente (pozitia mousului)  
+    cnt.lineTo(e.offsetX, e.offsetY); //astea vin din atributele eventului e    
+    cnt.stroke();
+    // lastX = e.offsetX;
+    // lastY = e. offsetY;
+    //echivalent cu:  (destructureing an array)
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+    hue++;
+  }
+
+canvas.addEventListener('mousemove', deseneaza);
+canvas.addEventListener('mousedown', (e) => {
+  inDesenare = true;
+  [lastX, lastY] = [e.offsetX, e.offsetY];
+  });
+canvas.addEventListener('mouseup', () => inDesenare = false);
+canvas.addEventListener('mouseout', () => inDesenare = false);
+
+</script>
+
+<style>
+  html, body {
+    margin:0;
+  }
+</style>
+
+</body>
+</html>
